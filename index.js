@@ -116,7 +116,7 @@ function exportResultsAsXLSX() {
 function copyResultsToClipboard(separator = '\n') {
     const results = document.getElementById('results').innerText.split('\n').join(separator);
     navigator.clipboard.writeText(results).then(() => {
-        alert('Results copied to clipboard');
+        console.log('Results copied to clipboard');
     }, (err) => {
         alert('Failed to copy results: ', err);
     });
