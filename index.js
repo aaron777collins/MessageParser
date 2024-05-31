@@ -28,7 +28,7 @@ function addParseOption() {
 }
 
 function removeParseOption(button) {
-    button.parentNode.remove();
+    button.parentNode.parentNode.parentNode.remove();
 }
 
 function parseXLSX() {
