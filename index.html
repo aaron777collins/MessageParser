@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Parser</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="center-align">Message Parser</h1>
+        <div class="file-field input-field">
+            <div class="btn purple">
+                <span>Choose File</span>
+                <input type="file" id="fileInput" accept=".xlsx">
+            </div>
+            <div class="file-path-wrapper">
+                <input class="file-path validate" type="text" placeholder="Upload your file">
+            </div>
+        </div>
+        <div class="input-field">
+            <input type="text" id="columnInput" placeholder="_source.message">
+            <label for="columnInput">Column Name (default: _source.message)</label>
+        </div>
+        <div id="parseOptions"></div>
+        <button class="btn orange" onclick="addParseOption()">Add Parse Option</button>
+        <button class="btn green" onclick="parseXLSX()">Parse XLSX</button>
+        <button class="btn dark-green" onclick="exportResultsAsXLSX()">Export as XLSX</button>
+        <button class="btn dark-blue" onclick="copyResultsToClipboard()">Copy to Clipboard</button>
+        <button class="btn dark-blue" onclick="copyResultsToClipboard(', ')">Copy to Clipboard (comma separated)</button>
+        <div class="result" id="results"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

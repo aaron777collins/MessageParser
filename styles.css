@@ -1,0 +1,78 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h1 {
+    color: #004d80;
+}
+
+.file-field .btn {
+    margin-right: 10px;
+}
+
+.result {
+    margin-top: 20px;
+    white-space: pre-wrap;
+    background: #e0f7fa;
+    padding: 10px;
+    border: 1px solid #004d80;
+    border-radius: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    resize: vertical;
+}
+
+.input-field {
+    margin-bottom: 20px;
+}
+
+.input-field label {
+    color: #004d80;
+}
+
+.input-field input[type=text]:focus + label {
+    color: #002d4d;
+}
+
+.input-field input[type=text]:focus {
+    border-bottom: 1px solid #002d4d;
+    box-shadow: 0 1px 0 0 #002d4d;
+}
+
+.btn {
+    margin: 5px 0;
+    width: 100%;
+    text-align: center;
+}
+
+.btn.dark-blue {
+    background-color: #005892;
+}
+
+.btn.dark-maroon {
+    background-color: #a4022b;
+}
+
+.parse-option {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #f4f4f4;
+    border-radius: 4px;
+    background: #ffffff;
+}
+
+.remove-btn {
+    margin-top: 10px;
+    width: 100%;
+}
