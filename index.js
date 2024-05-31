@@ -57,7 +57,8 @@ function parseXLSXData(sheetData, columnName) {
     const headers = sheetData[0];
     const columnIndex = headers.indexOf(columnName);
     if (columnIndex === -1) {
-        alert('Column not found in XLSX.');
+        console.log('Column not found in XLSX. Headers:', headers);
+        alert('Column not found in XLSX. Headers: ' + headers.join(', '));
         return [];
     }
 
