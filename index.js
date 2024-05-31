@@ -35,7 +35,14 @@ function parseXLSX() {
     const fileInput = document.getElementById('fileInput');
     const columnName = document.getElementById('columnInput').value || '_source.message';
     if (!fileInput.files.length) {
-        alert('Please upload an XLSX file.');
+        Toastify({
+            text: 'Please select an XLSX file to parse',
+            duration: 3000,
+            close: true,
+            gravity: 'top',
+            position: 'center',
+            backgroundColor: '#ff416c',
+        }).showToast();
         return;
     }
     const file = fileInput.files[0];
@@ -55,10 +62,36 @@ function parseXLSX() {
 
 function parseXLSXData(sheetData, columnName) {
     const headers = sheetData[0];
-    const columnIndex = headers.indexOf(columnName);
+    var columnIndex = -1
+    if (headers.length == 1 && headers.indexOf(columnName) == -1) {
+        // If only one column is present, then it is the data column
+        columnIndex = 0;
+        // Notify the user that only one column is present so the column name
+        // is being ignored
+        Toastify({
+            text: 'Can\'t find the column name in the XLSX file. Using the only column present, ' + "'" + headers[0] + "'",
+            duration: 3000,
+            close: true,
+            gravity: 'top',
+            position: 'center', // darker yellow
+            backgroundColor: '#ffaa00',
+        }).showToast();
+        // Update the form field to reflect the column name being used
+        document.getElementById('columnInput').value = headers[0];
+        M.updateTextFields();
+    } else {
+        columnIndex = headers.length > 1 ? headers.indexOf(columnName) : 0;
+    }
     if (columnIndex === -1) {
         console.log('Column not found in XLSX. Headers:', headers);
-        alert('Column not found in XLSX. Headers: ' + headers.join(', '));
+        Toastify({
+            text: 'Column not found in XLSX. Please check the column name and try again. Column Names: ' + headers.join(', '),
+            duration: 3000,
+            close: true,
+            gravity: 'top',
+            position: 'center',
+            backgroundColor: '#ff416c',
+        }).showToast();
         return [];
     }
 
@@ -85,6 +118,14 @@ function parseXLSXData(sheetData, columnName) {
             results.push(cellValue);
         }
     }
+    Toastify({
+        text: 'Parsed ' + results.length + ' rows successfully',
+        duration: 3000,
+        close: true,
+        gravity: 'top',
+        position: 'center', // green
+        backgroundColor: '#00b09b',
+    }).showToast();
     return results;
 }
 
@@ -118,8 +159,24 @@ function copyResultsToClipboard(separator = '\n') {
     const results = document.getElementById('results').innerText.split('\n').join(separator);
     navigator.clipboard.writeText(results).then(() => {
         console.log('Results copied to clipboard');
+        Toastify({
+            text: 'Results copied to clipboard',
+            duration: 3000,
+            close: true,
+            gravity: 'top',
+            position: 'center', // green
+            backgroundColor: '#00b09b',
+        }).showToast();
     }, (err) => {
-        alert('Failed to copy results: ', err);
+        console.error('Failed to copy results to clipboard:', err);
+        Toastify({
+            text: 'Failed to copy results to clipboard. Please try again.',
+            duration: 3000,
+            close: true,
+            gravity: 'top',
+            position: 'center',
+            backgroundColor: '#ff416c',
+        }).showToast();
     });
 }
 
