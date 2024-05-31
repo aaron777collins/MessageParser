@@ -14,7 +14,9 @@ body {
 }
 
 h1 {
-    color: #004d80;
+    color: #000000;
+    text-align: center;
+    font-weight: bold;
 }
 
 .file-field .btn {
