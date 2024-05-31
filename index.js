@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     M.AutoInit();
     loadFormDataFromURL();
     addEditDebounce();
+    initSortable();
 });
 
 
@@ -11,6 +12,16 @@ function addEditDebounce() {
     var columnNameInput = document.getElementById('columnInput');
     // Adding onEditDebounce to column input
     columnNameInput.addEventListener('input', () => onEditDebounce()(saveFormDataInURL));
+}
+
+function initSortable() {
+    const parseOptionsContainer = document.getElementById('parseOptions');
+    new Sortable(parseOptionsContainer, {
+        animation: 150,
+        onEnd: () => {
+            saveFormDataInURL();
+        }
+    });
 }
 
 function addParseOption() {
