@@ -1,21 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
     M.AutoInit();
     loadFormDataFromURL();
+    addEditDebounce();
 });
 
+
 let parseOptions = [];
+
+function addEditDebounce() {
+    var columnNameInput = document.getElementById('columnInput');
+    // Adding onEditDebounce to column input
+    columnNameInput.addEventListener('input', () => onEditDebounce()(saveFormDataInURL));
+}
 
 function addParseOption() {
     const optionContainer = document.createElement('div');
     optionContainer.className = 'parse-option card-panel';
+    // Detect edit event and save form data in URL
     optionContainer.innerHTML = `
         <div class="row">
             <div class="input-field col s6">
-                <input type="text" class="parseBefore parseOption">
+                <input type="text" class="parseBefore parseOption" oninput="onEditDebounce()(saveFormDataInURL)">
                 <label>Text Occurring Before</label>
             </div>
             <div class="input-field col s6">
-                <input type="text" class="parseAfter parseOption">
+                <input type="text" class="parseAfter parseOption" oninput="onEditDebounce()(saveFormDataInURL)">
                 <label>Text Occurring After</label>
             </div>
             <div class="col s12">
@@ -27,8 +36,19 @@ function addParseOption() {
     M.updateTextFields(); // To reinitialize the labels correctly
 }
 
+// on edit debounce
+function onEditDebounce() {
+    const debounceTime = 500;
+    let timeout;
+    return function (callback) {
+        clearTimeout(timeout);
+        timeout = setTimeout(callback, debounceTime);
+    };
+}
+
 function removeParseOption(button) {
     button.parentNode.parentNode.parentNode.remove();
+    saveFormDataInURL();
 }
 
 function parseXLSX() {
