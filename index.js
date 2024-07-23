@@ -1,18 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     M.AutoInit();
     loadFormDataFromURL();
-    addEditDebounce();
     initSortable();
 });
 
 
 let parseOptions = [];
-
-function addEditDebounce() {
-    var columnNameInput = document.getElementById('columnInput');
-    // Adding onEditDebounce to column input
-    columnNameInput.addEventListener('input', () => onEditDebounce()(saveFormDataInURL));
-}
 
 function initSortable() {
     const parseOptionsContainer = document.getElementById('parseOptions');
@@ -64,7 +57,6 @@ function removeParseOption(button) {
 
 function parseXLSX() {
     const fileInput = document.getElementById('fileInput');
-    const columnName = document.getElementById('columnInput').value || '_source.message';
     if (!fileInput.files.length) {
         Toastify({
             text: 'Please select an XLSX file to parse',
@@ -84,39 +76,41 @@ function parseXLSX() {
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
         const csvData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        const parsedData = parseXLSXData(csvData, columnName);
+        // If dropdown isn't populated, populate it with the first row of the XLSX
+        if (document.getElementById('columnInput').querySelectorAll('option').length <= 1) {
+            populateColumnDropdown(csvData[0]);
+            // set selected column to _source.message if it exists
+            if (csvData[0].includes('_source.message')) {
+                document.getElementById('columnInput').value = '_source.message';
+                // Update drop down to show selected value
+                M.FormSelect.init(document.getElementById('columnInput'));
+                saveFormDataInURL();
+            }
+        }
+        const parsedData = parseXLSXData(csvData);
         displayResults(parsedData);
-        saveFormDataInURL();
     };
     reader.readAsArrayBuffer(file);
 }
 
-function parseXLSXData(sheetData, columnName) {
-    const headers = sheetData[0];
-    var columnIndex = -1
-    if (headers.length == 1 && headers.indexOf(columnName) == -1) {
-        // If only one column is present, then it is the data column
-        columnIndex = 0;
-        // Notify the user that only one column is present so the column name
-        // is being ignored
-        Toastify({
-            text: 'Can\'t find the column name in the XLSX file. Using the only column present, ' + "'" + headers[0] + "'",
-            duration: 3000,
-            close: true,
-            gravity: 'top',
-            position: 'center', // darker yellow
-            backgroundColor: '#ffaa00',
-        }).showToast();
-        // Update the form field to reflect the column name being used
-        document.getElementById('columnInput').value = headers[0];
-        M.updateTextFields();
-    } else {
-        columnIndex = headers.length > 1 ? headers.indexOf(columnName) : 0;
-    }
+function populateColumnDropdown(headers) {
+    const columnInput = document.getElementById('columnInput');
+    columnInput.innerHTML = '<option value="" disabled selected>Choose your column</option>';
+    headers.forEach(header => {
+        const option = document.createElement('option');
+        option.value = header;
+        option.text = header;
+        columnInput.appendChild(option);
+    });
+    M.FormSelect.init(columnInput); // Reinitialize Materialize select
+}
+
+function parseXLSXData(sheetData) {
+    const columnName = document.getElementById('columnInput').value || '_source.message';
+    const columnIndex = sheetData[0].indexOf(columnName);
     if (columnIndex === -1) {
-        console.log('Column not found in XLSX. Headers:', headers);
         Toastify({
-            text: 'Column not found in XLSX. Please check the column name and try again. Column Names: ' + headers.join(', '),
+            text: 'Column not found in XLSX. Please check the column name and try again.',
             duration: 3000,
             close: true,
             gravity: 'top',
@@ -154,7 +148,7 @@ function parseXLSXData(sheetData, columnName) {
         duration: 3000,
         close: true,
         gravity: 'top',
-        position: 'center', // green
+        position: 'center',
         backgroundColor: '#00b09b',
     }).showToast();
     return results;

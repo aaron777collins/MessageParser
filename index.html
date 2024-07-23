@@ -16,15 +16,17 @@
         <div class="file-field input-field">
             <div class="btn purple">
                 <span>Choose File</span>
-                <input type="file" id="fileInput" accept=".xlsx">
+                <input type="file" id="fileInput" accept=".xlsx" onchange="parseXLSX()">
             </div>
             <div class="file-path-wrapper">
                 <input class="file-path validate" type="text" placeholder="Upload your file">
             </div>
         </div>
         <div class="input-field">
-            <input type="text" id="columnInput" placeholder="_source.message">
-            <label for="columnInput">Column Name (default: _source.message)</label>
+            <select id="columnInput" onchange="saveFormDataInURL()">
+                <option value="" disabled selected>Choose your column</option>
+            </select>
+            <label for="columnInput">Column Name</label>
         </div>
         <div id="parseOptions"></div>
         <button class="btn orange" onclick="addParseOption()">Add Parse Option</button>
