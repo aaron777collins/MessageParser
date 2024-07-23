@@ -29,9 +29,28 @@
             <label for="columnInput">Column Name</label>
         </div>
         <div id="parseOptions"></div>
+        <div id="sortOptions" style="display: none;">
+            <div class="input-field">
+                <select id="sortColumnInput" onchange="groupAndCountResultsWrapperOnUpdate()">
+                    <option value="" disabled selected>Choose column to sort by</option>
+                    <option value="value">Value</option>
+                    <option value="count">Count</option>
+                </select>
+                <label for="sortColumnInput">Sort Column</label>
+            </div>
+            <div class="input-field">
+                <select id="sortOrderInput" onchange="groupAndCountResultsWrapperOnUpdate()">
+                    <option value="" disabled selected>Choose sort order</option>
+                    <option value="ascending">Ascending</option>
+                    <option value="descending">Descending</option>
+                </select>
+                <label for="sortOrderInput">Sort Order</label>
+            </div>
+        </div>
         <button class="btn orange" onclick="addParseOption()">Add Parse Option</button>
         <button class="btn green" onclick="parseXLSX()">Parse XLSX</button>
-        <button class="btn dark-green" onclick="exportResultsAsXLSX()">Export as XLSX</button>
+        <button class="btn" onclick="groupAndCountResultsWrapper()">Group and Count</button>
+        <button class="btn cyan" onclick="exportResultsAsXLSX()">Export as XLSX</button>
         <button class="btn dark-blue" onclick="copyResultsToClipboard()">Copy to Clipboard</button>
         <button class="btn dark-blue" onclick="copyResultsToClipboard(', ')">Copy to Clipboard (comma separated)</button>
         <div class="result" id="results"></div>

@@ -55,6 +55,7 @@ function removeParseOption(button) {
     saveFormDataInURL();
 }
 
+// Returns promise that resolves after given time
 function parseXLSX() {
     const fileInput = document.getElementById('fileInput');
     if (!fileInput.files.length) {
@@ -66,7 +67,7 @@ function parseXLSX() {
             position: 'center',
             backgroundColor: '#ff416c',
         }).showToast();
-        return;
+        return new Promise((resolve, reject) => reject('No file selected'));
     }
     const file = fileInput.files[0];
     const reader = new FileReader();
@@ -91,6 +92,8 @@ function parseXLSX() {
         displayResults(parsedData);
     };
     reader.readAsArrayBuffer(file);
+    // Return a promise that resolves after parsing the XLSX and waiting 100ms
+    return new Promise((resolve, reject) => setTimeout(resolve, 100));
 }
 
 function populateColumnDropdown(headers) {
@@ -103,6 +106,19 @@ function populateColumnDropdown(headers) {
         columnInput.appendChild(option);
     });
     M.FormSelect.init(columnInput); // Reinitialize Materialize select
+}
+
+function populateGroupColumnDropdown() {
+    const groupColumnInput = document.getElementById('groupColumnInput');
+    groupColumnInput.innerHTML = '<option value="" disabled selected>Choose column to group by</option>';
+    var headers = ['Value', 'Count'];
+    headers.forEach(header => {
+        const option = document.createElement('option');
+        option.value = header;
+        option.text = header;
+        groupColumnInput.appendChild(option);
+    });
+    M.FormSelect.init(groupColumnInput);
 }
 
 function parseXLSXData(sheetData) {
@@ -170,6 +186,88 @@ function parseText(text, before, after) {
 function displayResults(results) {
     const resultContainer = document.getElementById('results');
     resultContainer.innerText = results.join('\n');
+}
+
+function groupAndCountResultsWrapper() {
+    // first call parseXLSX to get the data (promise)
+    parseXLSX().then(() => {
+        // then call groupAndCountResults
+        groupAndCountResults();
+    });
+}
+
+function groupAndCountResultsWrapperOnUpdate() {
+    // Calls groupAndCountResultsWrapper when the column dropdown is updated
+    // but checks if the sort options and sort order have been selected first
+    const sortOptions = document.getElementById('sortOptions');
+    if (sortOptions.style.display === 'none') {
+        return;
+    }
+    // Checks drop downs
+    const sortColumn = document.getElementById('sortColumnInput').value;
+    const sortOrder = document.getElementById('sortOrderInput').value;
+    if (sortColumn && sortOrder) {
+        groupAndCountResultsWrapper();
+    }
+}
+
+function groupAndCountResults() {
+
+    const sortOptions = document.getElementById('sortOptions');
+
+    if (sortOptions.style.display === 'none') {
+        sortOptions.style.display = 'block';
+        return;
+    }
+
+    const sortColumn = document.getElementById('sortColumnInput').value;
+    const sortOrder = document.getElementById('sortOrderInput').value;
+
+    if (!sortColumn) {
+        Toastify({
+            text: 'Please select a column to sort by',
+            duration: 3000,
+            close: true,
+            gravity: 'top',
+            position: 'center',
+            backgroundColor: '#ff416c',
+        }).showToast();
+        return;
+    }
+
+    if (!sortOrder) {
+        Toastify({
+            text: 'Please select a sort order',
+            duration: 3000,
+            close: true,
+            gravity: 'top',
+            position: 'center',
+            backgroundColor: '#ff416c',
+        }).showToast();
+        return;
+    }
+
+    const results = document.getElementById('results').innerText.split('\n');
+    const countMap = results.reduce((acc, val) => {
+        acc[val] = (acc[val] || 0) + 1;
+        return acc;
+    }, {});
+
+    const groupedResults = Object.entries(countMap).map(([value, count]) => ({ value, count }));
+    groupedResults.sort((a, b) => {
+        if (sortOrder === 'ascending') {
+            return a[sortColumn] > b[sortColumn] ? 1 : -1;
+        } else {
+            return a[sortColumn] < b[sortColumn] ? 1 : -1;
+        }
+    });
+
+    displayGroupedResults(groupedResults);
+}
+
+function displayGroupedResults(groupedResults) {
+    const resultContainer = document.getElementById('results');
+    resultContainer.innerText = groupedResults.map(result => `${result.value}\t${result.count}`).join('\n');
 }
 
 function exportResultsAsXLSX() {
